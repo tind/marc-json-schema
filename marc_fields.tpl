@@ -1,7 +1,3 @@
-{% macro clean_name(name) -%}
-{{ name|lower()|replace(' ', '_')|replace(',', '_')|replace('/', '_')|replace('(', '')|replace(')', '')|replace('-', '_')|replace('.', '')|replace("'", '_') }}
-{%- endmacro %}
-
 {%- for tag, field in data if tag|length() == 3 %}
 
 @extend
