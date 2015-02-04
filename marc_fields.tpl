@@ -4,7 +4,7 @@
 
 {%- for tag, field in data.iteritems() if tag|length() == 3 %}
 
-{%- if 'subfields' in field %}
+{% if 'subfields' in field %}
 @extend
 {{ clean_name(field.name) }}:
     creator:

@@ -13,7 +13,7 @@ def generate(source, template, re_fields=None):
     """Output rendered JSONAlchemy configuration."""
     re_fields = re.compile(re_fields) if re_fields else None
     data = dict((code, value) for code, value in json.load(source).iteritems()
-                if re_fields and re_fields.match(code))
+                if re_fields is None or re_fields.match(code))
     tpl = Template(template.read())
     click.echo(tpl.render(data=data))
 
