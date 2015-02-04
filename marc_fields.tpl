@@ -2,11 +2,11 @@
 {{ name|lower()|replace(' ', '_')|replace(',', '_')|replace('/', '_')|replace('(', '')|replace(')', '')|replace('-', '_')|replace('.', '')|replace("'", '_') }}
 {%- endmacro %}
 
-{%- for tag, field in data.iteritems() if tag|length() == 3 %}
+{%- for tag, field in data if tag|length() == 3 %}
 
-{% if 'subfields' in field %}
 @extend
 {{ clean_name(field.name) }}:
+{%- if 'subfields' in field %}
     creator:
         @legacy((('{{ tag }}', '{{ tag }}__', '{{ tag}}__%'), ''),
         {%- for code, subfield in field.get('subfields').iteritems() %}
@@ -21,5 +21,11 @@
         {%- for code, subfield in field.get('subfields').iteritems() -%}
             '{{ tag }}__{{ code }}': '{{ clean_name(subfield['name']) }}'{{ '' if loop.last else ', ' }}
         {%- endfor -%}}
+{%- else %}
+    creator:
+        @legacy(('{{ tag }}', ''), )
+        marc, '{{ tag }}', value
+    producer:
+        json_for_marc(), {'{{ tag }}': ''}
 {%- endif %}
 {%- endfor %}
