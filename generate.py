@@ -2,7 +2,9 @@ import click
 import json
 import re
 
+from flask.json import tojson_filter
 from jinja2 import Template
+
 
 def clean_name(name):
     """FIXME quick hack.
@@ -20,7 +22,8 @@ def clean_name(name):
     name = name.replace('.', '')
     name = name.replace("'", '_')
     name = name.replace('$', '_')
-    name = name.replace('__', '_')
+    name = re.sub('___*', '_', name)
+    name = name.strip('_')
     return name
 
 def get_indicator(possition, field):
@@ -42,7 +45,8 @@ def get_indicator(possition, field):
     )
     if len(indicator.get('values')) > 0:
         indicator['re'] = '[{0}]'.format(''.join(
-            indicator.get('values', {}).keys()).replace('#', '.'))
+            set(indicator.get('values', {}).keys()) | set('#')
+        ).replace('#', '_'))
     else:
         return {'re': '.'}
     return indicator
@@ -63,6 +67,7 @@ def generate(source, template, re_fields=None):
         data=sorted(data),
         clean_name=clean_name,
         get_indicator=get_indicator,
+        tojson=tojson_filter,
     ))
 
 if __name__ == '__main__':
