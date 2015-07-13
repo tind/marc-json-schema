@@ -39,10 +39,17 @@ def get_indicator(possition, field):
         return {'re': '.'}
 
     indicator['name'] = clean_name(indicator['name'])
+
+    def expand(key):
+        if '-' in key:
+            start, stop = key.split('-')
+            return map(str, range(int(start), int(stop) + 1))
+        return [key]
+
     indicator['values'] = dict(
-        (k, v) for k, v in indicator.get('values', {}).iteritems()
-        if '-' not in k
+        (k, v) for kk, v in indicator.get('values', {}).iteritems() for k in expand(kk)
     )
+
     if len(indicator.get('values')) > 0:
         indicator['re'] = '[{0}]'.format(''.join(
             set(indicator.get('values', {}).keys()) | set('#')
@@ -68,6 +75,7 @@ def generate(source, template, re_fields=None):
         clean_name=clean_name,
         get_indicator=get_indicator,
         tojson=tojson_filter,
+        set=lambda *args, **kwargs: list(set(*args, **kwargs)),
     ))
 
 if __name__ == '__main__':

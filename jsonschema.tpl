@@ -3,25 +3,25 @@
     {%- set indicator2 = get_indicator(2, field) -%}
     {%- if indicator1.get('name') %}
         "{{ indicator1['name'] }}": {
-            "enum": {{ tojson(indicator1.get('values', {}).values()) }}
+            "enum": {{ tojson(set(indicator1.get('values', {}).values())) }}
         },
     {%- endif %}
     {%- if indicator2.get('name') %}
         "{{ indicator2['name'] }}": {
-            "enum": {{ tojson(indicator2.get('values', {}).values()) }}
+            "enum": {{ tojson(set(indicator2.get('values', {}).values())) }}
         },
     {%- endif %}
     {%- for code, subfield in field.get('subfields').iteritems() %}
       {%- if subfield.get('repeatable', False) %}
         "{{ clean_name(subfield['name']) }}": {
-            "type": "string"
-        }{{ ',' if not loop.last }}
-      {%- else %}
-        "{{ clean_name(subfield['name']) }}": {
             "type": "array",
             "items": {
                 "type": "string"
             }
+        }{{ ',' if not loop.last }}
+      {%- else %}
+        "{{ clean_name(subfield['name']) }}": {
+            "type": "string"
         }{{ ',' if not loop.last }}
       {%- endif %}
     {%- endfor %}

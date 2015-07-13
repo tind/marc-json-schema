@@ -36,11 +36,11 @@ def {{ clean_name(field.name) }}(self, key, value):
     return {
     {%- for code, subfield in field.get('subfields').iteritems() %}
       {%- if subfield.get('repeatable', False) %}
-        '{{ clean_name(subfield['name']) }}': value.get('{{ code }}'),
-      {%- else %}
         '{{ clean_name(subfield['name']) }}': utils.force_list(
             value.get('{{ code }}')
         ),
+      {%- else %}
+        '{{ clean_name(subfield['name']) }}': value.get('{{ code }}'),
       {%- endif %}
     {%- endfor %}
     {%- if indicator1.get('name') %}
