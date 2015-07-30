@@ -1,0 +1,13 @@
+bd00x.py:00.
+bd01x09x.py:0[1-9].
+bd1xx.py:1..
+bd20x24x.py:2[0-4].
+bd25x28x.py:2[5-9].
+bd3xx.py:3..
+bd4xx.py:4..
+bd5xx.py:5..
+bd6xx.py:6..
+bd70x75x.py:7[0-5].
+bd76x78x.py:7[6-8].
+bd80x83x.py:8[0-3].
+bd84188x.py:(8[4-6].|87.|88[1-57-9])
