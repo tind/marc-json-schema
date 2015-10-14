@@ -29,7 +29,7 @@ def clean_name(name):
 def get_indicator(possition, field):
     indicators = field.get('indicators', {})
     possition = str(possition)
-    if not possition in indicators:
+    if not indicators or not possition in indicators:
         return {'re': '.'}
 
     indicator = indicators[possition]

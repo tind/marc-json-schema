@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -13,27 +12,23 @@ import json
 
 class marcDoc2Json:
 
-    dataDirectory = "marcDocs/"
-    dataDirectoryFixed = "marcDocs/fixed/"
-    schema = {}
-
     def __init__(self):
+
+        self.dataDirectory = "marc_holdings/"
+        self.dataDirectoryFixed = "marc_holdings/fixed/"
+        self.schema = {}
 
         # self.downloadHTML()
 
-        self.files = [
-            f for f in listdir(
-                self.dataDirectoryFixed) if isfile(
-                join(
-                    self.dataDirectoryFixed,
-                    f))]
+        self.files = [f for f in listdir(self.dataDirectoryFixed)
+                      if isfile(join(self.dataDirectoryFixed, f))]
 
         for f in self.files:
             print ("Processing", f)
             self.processing = f
-            with open(self.dataDirectoryFixed + f, encoding='utf-8') as aFile:
+            with open(self.dataDirectoryFixed + f) as aFile:
                 html = aFile.read()
-            self.processHTMLFixed(html)
+                self.processHTMLFixed(html)
 
         self.files = [f for f in listdir(self.dataDirectory)
                       if isfile(join(self.dataDirectory, f))]
@@ -41,12 +36,12 @@ class marcDoc2Json:
         for f in self.files:
 
             print ("Processing", f)
-            with open(self.dataDirectory + f, encoding='utf-8') as aFile:
+            with open(self.dataDirectory + f) as aFile:
                 html = aFile.read()
 
             self.processHTML(html)
 
-        with open("../marc21_biblo_schema.json", 'w') as aFile:
+        with open("../marc21_holdings_schema.json", 'w') as aFile:
             aFile.write(
                 json.dumps(
                     self.schema,
@@ -58,15 +53,15 @@ class marcDoc2Json:
 
     def downloadHTML(self):
 
-        baseURL = "http://www.loc.gov/marc/bibliographic/bd{CODE}.html"
-
-        for x in range(10, 1000):
+        baseURL = "http://www.loc.gov/marc/holdings/hd{CODE}.html"
+        from itertools import chain
+        for x in chain(xrange(10, 200), xrange(300, 400), xrange(500, 600), xrange(800, 900)):
 
             url = baseURL.replace("{CODE}", "%03d" % (x,))
             r = requests.get(url)
             if r.status_code == 200:
-                with open(dataDirectory + "%03d" % (x,), 'w') as newfile:
-                    newfile.write(r.text)
+                with open(self.dataDirectory + "%03d" % (x,), 'w') as newfile:
+                    newfile.write(r.text.encode('utf-8'))
                 print ("%03d" % (x,), " - Good")
             else:
                 print ("%03d" % (x,), " - Bad")
@@ -106,14 +101,13 @@ class marcDoc2Json:
             url = baseURL.replace("{CODE}", x)
             r = requests.get(url)
             if r.status_code == 200:
-                with open(dataDirectoryFixed + x, 'w') as newfile:
+                with open(self.dataDirectoryFixed + x, 'w') as newfile:
                     newfile.write(r.text)
                 print (x, " - Good")
             else:
                 print (x, " - Bad")
 
     def processHTMLFixed(self, html):
-
         extraSpecialFields = ['007', '008']
 
         soup = BeautifulSoup(html)
@@ -219,10 +213,10 @@ class marcDoc2Json:
                 groups = {}
                 for td in soup.find_all('td', {'width': '45%'}):
                     lines = str(td).replace(
-                        "</br>",
-                        '').replace(
-                        "<br/>",
-                        '').replace(
+                            #"</br>",
+                            #'').replace(
+                            #"<br/>",
+                            #'').replace(
                         "\n",
                         '').replace(
                         "\t",
@@ -230,7 +224,7 @@ class marcDoc2Json:
                         "</td>",
                         '').replace(
                         '<td width="45%">',
-                        '').split("<br>")
+                        '').split("<br/>")
 
                     for line in lines:
 
@@ -271,8 +265,7 @@ class marcDoc2Json:
                         if groups[x] not in allPositions:
                             allPositions.append(groups[x])
 
-        if len(
-                allPositions) == 0 and self.processing != '001' and self.processing != '003' and self.processing != '005':
+        if len(allPositions) == 0 and self.processing != '001' and self.processing != '003' and self.processing != '005':
 
             allPositions = {}
 
@@ -354,7 +347,6 @@ class marcDoc2Json:
             "positions": allPositions}
 
     def processHTML(self, html):
-
         soup = BeautifulSoup(html)
 
         tables = soup.find_all("table")
@@ -400,7 +392,7 @@ class marcDoc2Json:
             foundIndicators = False
 
         # maybe it is their alternate html layout
-
+        bothIndicators = False
         if not foundIndicators:
             foundIndicators = True
             indicators = soup('table', {'class': 'indicators'})
@@ -442,14 +434,10 @@ class marcDoc2Json:
             for aSubfield in subfields:
 
                 aSubfield = str(aSubfield).replace(
-                    '<td colspan="1">',
-                    '').replace(
-                    '</td>',
-                    '').replace(
-                    '</br>',
-                    '').replace(
-                    "<br/>",
-                    "").replace(
+                    '<td colspan="1">', '').replace(
+                    '</td>', '').replace(
+                            # '</br>', '').replace(
+                            # "<br/>", "").replace(
                     "\n",
                     '').replace(
                         "\t",
@@ -462,7 +450,7 @@ class marcDoc2Json:
                     '')
 
                 aSubfield = ' '.join(aSubfield.split())
-                fields = aSubfield.split("<br>")
+                fields = aSubfield.split("<br/>")
 
                 for f in fields:
 
@@ -470,7 +458,7 @@ class marcDoc2Json:
 
                     f = f.strip()
 
-                    if f.find("$") > -1 and f.find(" - ") > -1:
+                    if "$" in f and " - " in f:
                         code, desc = f.split(" - ")
                         code = code.replace("$", "")
 
@@ -638,13 +626,12 @@ class marcDoc2Json:
             foundFields = {}
             lastCode = ""
 
-            subfields = str(subfields).replace(
-                '</br>',
-                "<br>").replace(
-                '<br/>',
-                "<br>")
-
-            lines = subfields.split("<br>")
+            subfields = str(subfields)  # .replace(
+            #    '</br>',
+            #    "<br>").replace(
+            #    '<br/>',
+            #    "<br>")
+            lines = subfields.split("<br/>")
             for l in lines:
 
                 if l.find("$") > -1 and l.find(" - ") > - \
@@ -786,6 +773,7 @@ class marcDoc2Json:
                     '</span>',
                     '').split("<br/>")
 
+            indicatorContentsTitle = False
             if indicatorContents[0].strip()[0:4] == "<em>":
                 indicatorContentsTitle = indicatorContents[0].strip().replace(
                     "<em>",
