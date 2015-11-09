@@ -35,7 +35,7 @@ def get_indicator(possition, field):
     indicator = indicators[possition]
     if indicator['name'] == 'Undefined' or clean_name(indicator['name']) in [
             'source_of_code', 'number_source', 'code_source', 'type_of_address',
-            'source_of_term', 'access_method', 'same_as_associated_field', 'same_as_associated_field']:
+            'source_of_term', 'same_as_associated_field', 'same_as_associated_field']:
         return {'re': '.'}
 
     indicator['name'] = clean_name(indicator['name'])
@@ -58,7 +58,14 @@ def get_indicator(possition, field):
         return {'re': '.'}
     return indicator
 
+def reverse_indicator_dict(d):
+    new_dict = {}
+    for key, value in d.iteritems():
+        if key == '#':
+            key = '_'
+        new_dict[value] = key
 
+    return new_dict
 
 @click.command()
 @click.argument('source', type=click.File('r'))
@@ -74,6 +81,7 @@ def generate(source, template, re_fields=None):
         data=sorted(data),
         clean_name=clean_name,
         get_indicator=get_indicator,
+        reverse_indicator_dict=reverse_indicator_dict,
         tojson=tojson_filter,
         set=lambda *args, **kwargs: list(set(*args, **kwargs)),
     ))
