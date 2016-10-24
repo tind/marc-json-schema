@@ -5,6 +5,7 @@
 from bs4 import BeautifulSoup
 from os import listdir
 from os.path import isfile, join
+import re
 import requests
 import sys
 import string
@@ -65,7 +66,7 @@ class marcDoc2Json:
             url = baseURL.replace("{CODE}", "%03d" % (x,))
             r = requests.get(url)
             if r.status_code == 200:
-                with open(dataDirectory + "%03d" % (x,), 'w') as newfile:
+                with open(self.dataDirectory + "%03d" % (x,), 'w') as newfile:
                     newfile.write(r.text)
                 print ("%03d" % (x,), " - Good")
             else:
@@ -106,7 +107,7 @@ class marcDoc2Json:
             url = baseURL.replace("{CODE}", x)
             r = requests.get(url)
             if r.status_code == 200:
-                with open(dataDirectoryFixed + x, 'w') as newfile:
+                with open(self.dataDirectoryFixed + x, 'w') as newfile:
                     newfile.write(r.text)
                 print (x, " - Good")
             else:
@@ -406,10 +407,13 @@ class marcDoc2Json:
             indicators = soup('table', {'class': 'indicators'})
             if len(indicators) == 1:
                 subSoup = BeautifulSoup(str(indicators))
-                indicators = [
-                    subSoup.find_all("td")[0],
-                    subSoup.find_all("td")[1]]
-                bothIndicators = self.processIndicators(indicators)
+                try:
+                    indicators = [
+                        subSoup.find_all("td")[0],
+                        subSoup.find_all("td")[1]]
+                    bothIndicators = self.processIndicators(indicators)
+                except IndexError: # Couldn't find two indicators
+                    foundIndicators = False
             else:
                 foundIndicators = False
 
@@ -426,6 +430,19 @@ class marcDoc2Json:
                     foundIndicators = False
             else:
                 foundIndicators = False
+
+        # Sometimes, the HTML isn't valid. RegEx it is
+        if not foundIndicators:
+            p = re.compile(r'table.*?class=\"indicators\"(.+?)\/table', re.MULTILINE | re.DOTALL)
+            tdp = re.compile(r'(\<td\>.*?\<\/td\>)', re.MULTILINE | re.DOTALL)
+            indicators = []
+            table = p.findall(html)[0]
+            # Found the indicators
+            for td in tdp.findall(table):
+                indicators.append(BeautifulSoup(td).find_all('td')[0])
+            if len(indicators) == 2:
+                bothIndicators = self.processIndicators(indicators)
+                foundIndicators = True
 
         # subfields
         foundSubfields = True
@@ -761,7 +778,6 @@ class marcDoc2Json:
             "fixed": False}
 
     def processIndicators(self, indicators):
-
         bothIndicators = {}
 
         count = 1

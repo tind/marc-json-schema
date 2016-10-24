@@ -3,15 +3,27 @@
     {%- set indicator2 = get_indicator(2, field) -%}
     {%- if indicator1.get('name') %}
         "{{ indicator1['name'] }}": {
-            "enum": {{ tojson(set(indicator1.get('values', {}).values())) }}
+          {%- if indicator1.get('specified_in_subfield') %}
+            "type": "string"
+          {%- elif indicator1.get('name') == 'nonfiling_characters' %}
+            "enum": {{ tojson(set(map(int_to_str, range(10)))) }}
+          {%- else %}
+            "enum": {{ tojson(set(map(int_to_str, indicator1.get('values', {}).values()))) }}
+          {%- endif %}
         },
     {%- endif %}
     {%- if indicator2.get('name') %}
         "{{ indicator2['name'] }}": {
-            "enum": {{ tojson(set(indicator2.get('values', {}).values())) }}
+          {%- if indicator2.get('specified_in_subfield') %}
+            "type": "string"
+          {%- elif indicator2.get('name') == 'nonfiling_characters' %}
+            "enum": {{ tojson(set(map(int_to_str, range(10)))) }}
+          {%- else %}
+            "enum": {{ tojson(set(map(int_to_str, indicator2.get('values', {}).values()))) }}
+          {%- endif %}
         },
     {%- endif %}
-    {%- for code, subfield in field.get('subfields').iteritems() %}
+    {%- for code, subfield in field.get('subfields').items() %}
       {%- if subfield.get('repeatable', False) %}
         "{{ clean_name(subfield['name']) }}": {
             "type": "array",

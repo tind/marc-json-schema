@@ -3,7 +3,7 @@ import json
 import re
 
 from flask.json import tojson_filter
-from jinja2 import Template
+from jinja2 import Template, Environment, FileSystemLoader
 
 
 def clean_name(name):
@@ -26,59 +26,86 @@ def clean_name(name):
     name = name.strip('_')
     return name
 
-def get_indicator(possition, field):
+
+def get_indicator(position, field):
     indicators = field.get('indicators', {})
-    possition = str(possition)
-    if not indicators or not possition in indicators:
+    position = str(position)
+    if not indicators or position not in indicators:
         return {'re': '.'}
 
-    indicator = indicators[possition]
-    if indicator['name'] == 'Undefined' or clean_name(indicator['name']) in [
-            'source_of_code', 'number_source', 'code_source', 'type_of_address',
-            'source_of_term', 'same_as_associated_field', 'same_as_associated_field']:
+    indicator = indicators[position]
+    if indicator['name'] == 'Undefined':
         return {'re': '.'}
 
     indicator['name'] = clean_name(indicator['name'])
 
-    def expand(key):
+    def expand(key, value):
         if '-' in key:
             start, stop = key.split('-')
-            return map(str, range(int(start), int(stop) + 1))
-        return [key]
+            returndict = dict()
+            return ((str(x), str(x)) for x in range(int(start), int(stop) + 1))
+        return [(key, value)]
+
+    def clean_string(s):
+        s = re.sub(r'\\n|\\t', "", s)
+        s = re.sub(r'\s{2,}', " ", s)
+        return s.strip()
 
     indicator['values'] = dict(
-        (k, v) for kk, v in indicator.get('values', {}).iteritems() for k in expand(kk)
+        (k.replace('#', '_'), clean_string(v)) for key, value in
+        indicator.get('values', {}).items() for k, v in expand(key, value)
     )
+
+    for key, value in indicator['values'].items():
+        if 'specified in subfield' in value:
+            subfield = value.split("$")[-1]
+            indicator['specified_in_subfield'] = subfield
+            indicator['specified_in_subfield_ind'] = key
 
     if len(indicator.get('values')) > 0:
         indicator['re'] = '[{0}]'.format(''.join(
-            set(indicator.get('values', {}).keys()) | set('#')
+            set(indicator.get('values', {}).keys()) | set('_')
         ).replace('#', '_'))
     else:
         return {'re': '.'}
+
     return indicator
+
 
 def reverse_indicator_dict(d):
     new_dict = {}
-    for key, value in d.iteritems():
+    for key, value in d.items():
         if key == '#':
             key = '_'
         new_dict[value] = key
 
     return new_dict
 
+
+def int_to_str(i):
+    if isinstance(i, int):
+        return str(i)
+    else:
+        return i
+
+
 @click.command()
 @click.argument('source', type=click.File('r'))
-@click.argument('template', type=click.File('r'))
+@click.argument('template')
 @click.option('--re-fields', help='Regular expression to filter fields.')
 def generate(source, template, re_fields=None):
     """Output rendered JSONAlchemy configuration."""
     re_fields = re.compile(re_fields) if re_fields else None
-    data = [(code, value) for code, value in json.load(source).iteritems()
+    data = [(code, value) for code, value in json.load(source).items()
             if re_fields is None or re_fields.match(code)]
-    tpl = Template(template.read())
+    templateLoader = FileSystemLoader( searchpath="." )
+    env = Environment(extensions=['jinja2.ext.do'], loader=templateLoader)
+    tpl = env.get_template(template)
     click.echo(tpl.render(
         data=sorted(data),
+        any=any,
+        map=map,
+        int_to_str=int_to_str,
         clean_name=clean_name,
         get_indicator=get_indicator,
         reverse_indicator_dict=reverse_indicator_dict,
