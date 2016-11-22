@@ -899,7 +899,23 @@
     },
     "045": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Type of time period in subfield $b or $c",
+                "values": {
+                    "#": "Subfield $b or $c not present",
+                    "0": "Single date/time",
+                    "1": "Multiple single dates/times",
+                    "2": "Range of dates/times"
+                }
+            },
+            "2": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            }
+        },
         "name": "Time Period of Heading",
         "repeatable": false,
         "subfields": {
@@ -1028,7 +1044,21 @@
     },
     "050": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            },
+            "2": {
+                "name": "Source of call number",
+                "values": {
+                    "0": "Assigned by LC",
+                    "4": "Assigned by agency other than LC"
+                }
+            }
+        },
         "name": "Library of Congress Call Number",
         "repeatable": true,
         "subfields": {
@@ -1066,7 +1096,22 @@
     },
     "052": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Code source",
+                "values": {
+                    "#": "Library of Congress Classification",
+                    "1": "U.S. Dept. of Defense Classification",
+                    "7": "Source specified in subfield $2"
+                }
+            },
+            "2": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            }
+        },
         "name": "Geographic Classification",
         "repeatable": true,
         "subfields": {
@@ -1104,7 +1149,21 @@
     },
     "053": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            },
+            "2": {
+                "name": "Source of classification number",
+                "values": {
+                    "0": "Assigned by LC",
+                    "4": "Assigned by agency other than LC"
+                }
+            }
+        },
         "name": "LC Classification Number",
         "repeatable": true,
         "subfields": {
@@ -1142,7 +1201,21 @@
     },
     "055": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            },
+            "2": {
+                "name": "Source of call number",
+                "values": {
+                    "0": "Assigned by LAC",
+                    "4": "Assigned by agency other than LC"
+                }
+            }
+        },
         "name": "Library and Archives Canada Call Number",
         "repeatable": true,
         "subfields": {
@@ -1180,7 +1253,21 @@
     },
     "060": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            },
+            "2": {
+                "name": "Source of call number",
+                "values": {
+                    "0": "Assigned by NLM",
+                    "4": "Assigned by agency other than NLM"
+                }
+            }
+        },
         "name": "National Library of Medicine Call Number",
         "repeatable": true,
         "subfields": {
@@ -1317,7 +1404,22 @@
     },
     "072": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            },
+            "2": {
+                "name": "Code source",
+                "values": {
+                    "#": "No information provided",
+                    "0": "NAL subject category code list",
+                    "7": "Source specified in subfield $2"
+                }
+            }
+        },
         "name": "Subject Category Code",
         "repeatable": true,
         "subfields": {
@@ -1378,7 +1480,22 @@
     },
     "080": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Type of edition",
+                "values": {
+                    "#": "No information provided",
+                    "0": "Full",
+                    "1": "Abridged"
+                }
+            },
+            "2": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            }
+        },
         "name": "Universal Decimal Classification Number",
         "repeatable": true,
         "subfields": {
@@ -3484,7 +3601,7 @@
                 "static": false
             },
             "e": {
-                "name": "Number of ensembles",
+                "name": "Number of ensembles of the same type",
                 "repeatable": true,
                 "static": false
             },
@@ -3498,8 +3615,18 @@
                 "repeatable": true,
                 "static": false
             },
+            "r": {
+                "name": "Total number of individuals performing alongside ensembles",
+                "repeatable": false,
+                "static": false
+            },
             "s": {
                 "name": "Total number of performers",
+                "repeatable": false,
+                "static": false
+            },
+            "t": {
+                "name": "Total number of ensembles",
                 "repeatable": false,
                 "static": false
             },
@@ -6706,7 +6833,21 @@
     },
     "640": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Note format style",
+                "values": {
+                    "0": "Formatted style",
+                    "1": "Unformatted style "
+                }
+            },
+            "2": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            }
+        },
         "name": "Series Dates of Publication and/or Sequential Designation",
         "repeatable": true,
         "subfields": {
@@ -7273,7 +7414,22 @@
     },
     "678": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Type of data",
+                "values": {
+                    "#": "No information provided",
+                    "0": "Biographical sketch",
+                    "1": "Administrative history"
+                }
+            },
+            "2": {
+                "name": "Undefined",
+                "values": {
+                    "#": "Undefined"
+                }
+            }
+        },
         "name": "Biographical or Historical Data",
         "repeatable": true,
         "subfields": {
@@ -9129,7 +9285,30 @@
     },
     "856": {
         "fixed": false,
-        "indicators": false,
+        "indicators": {
+            "1": {
+                "name": "Access method",
+                "values": {
+                    "#": "No information provided",
+                    "0": "Email",
+                    "1": "FTP",
+                    "2": "Remote login (Telnet)",
+                    "3": "Dial-up",
+                    "4": "HTTP",
+                    "7": "Method specified in subfield $2"
+                }
+            },
+            "2": {
+                "name": "Relationship",
+                "values": {
+                    "#": "No information provided",
+                    "0": "Resource",
+                    "1": "Version of resource",
+                    "2": "Related resource",
+                    "8": "No display constant generated"
+                }
+            }
+        },
         "name": "Electronic Location and Access",
         "repeatable": true,
         "subfields": {
@@ -9282,32 +9461,32 @@
         "repeatable": true,
         "subfields": {
             "0": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 0",
                 "repeatable": true,
                 "static": false
             },
             "1": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 1",
                 "repeatable": true,
                 "static": false
             },
             "2": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 2",
                 "repeatable": true,
                 "static": false
             },
             "3": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 3",
                 "repeatable": true,
                 "static": false
             },
             "4": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 4",
                 "repeatable": true,
                 "static": false
             },
             "5": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 5",
                 "repeatable": true,
                 "static": false
             },
@@ -9317,147 +9496,147 @@
                 "static": false
             },
             "7": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 7",
                 "repeatable": true,
                 "static": false
             },
             "8": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 8",
                 "repeatable": true,
                 "static": false
             },
             "9": {
-                "name": "Same as associated field",
+                "name": "Same as associated field 9",
                 "repeatable": true,
                 "static": false
             },
             "a": {
-                "name": "Same as associated field",
+                "name": "Same as associated field a",
                 "repeatable": true,
                 "static": false
             },
             "b": {
-                "name": "Same as associated field",
+                "name": "Same as associated field b",
                 "repeatable": true,
                 "static": false
             },
             "c": {
-                "name": "Same as associated field",
+                "name": "Same as associated field c",
                 "repeatable": true,
                 "static": false
             },
             "d": {
-                "name": "Same as associated field",
+                "name": "Same as associated field d",
                 "repeatable": true,
                 "static": false
             },
             "e": {
-                "name": "Same as associated field",
+                "name": "Same as associated field e",
                 "repeatable": true,
                 "static": false
             },
             "f": {
-                "name": "Same as associated field",
+                "name": "Same as associated field f",
                 "repeatable": true,
                 "static": false
             },
             "g": {
-                "name": "Same as associated field",
+                "name": "Same as associated field g",
                 "repeatable": true,
                 "static": false
             },
             "h": {
-                "name": "Same as associated field",
+                "name": "Same as associated field h",
                 "repeatable": true,
                 "static": false
             },
             "i": {
-                "name": "Same as associated field",
+                "name": "Same as associated field i",
                 "repeatable": true,
                 "static": false
             },
             "j": {
-                "name": "Same as associated field",
+                "name": "Same as associated field j",
                 "repeatable": true,
                 "static": false
             },
             "k": {
-                "name": "Same as associated field",
+                "name": "Same as associated field k",
                 "repeatable": true,
                 "static": false
             },
             "l": {
-                "name": "Same as associated field",
+                "name": "Same as associated field l",
                 "repeatable": true,
                 "static": false
             },
             "m": {
-                "name": "Same as associated field",
+                "name": "Same as associated field m",
                 "repeatable": true,
                 "static": false
             },
             "n": {
-                "name": "Same as associated field",
+                "name": "Same as associated field n",
                 "repeatable": true,
                 "static": false
             },
             "o": {
-                "name": "Same as associated field",
+                "name": "Same as associated field o",
                 "repeatable": true,
                 "static": false
             },
             "p": {
-                "name": "Same as associated field",
+                "name": "Same as associated field p",
                 "repeatable": true,
                 "static": false
             },
             "q": {
-                "name": "Same as associated field",
+                "name": "Same as associated field q",
                 "repeatable": true,
                 "static": false
             },
             "r": {
-                "name": "Same as associated field",
+                "name": "Same as associated field r",
                 "repeatable": true,
                 "static": false
             },
             "s": {
-                "name": "Same as associated field",
+                "name": "Same as associated field s",
                 "repeatable": true,
                 "static": false
             },
             "t": {
-                "name": "Same as associated field",
+                "name": "Same as associated field t",
                 "repeatable": true,
                 "static": false
             },
             "u": {
-                "name": "Same as associated field",
+                "name": "Same as associated field u",
                 "repeatable": true,
                 "static": false
             },
             "v": {
-                "name": "Same as associated field",
+                "name": "Same as associated field v",
                 "repeatable": true,
                 "static": false
             },
             "w": {
-                "name": "Same as associated field",
+                "name": "Same as associated field w",
                 "repeatable": true,
                 "static": false
             },
             "x": {
-                "name": "Same as associated field",
+                "name": "Same as associated field x",
                 "repeatable": true,
                 "static": false
             },
             "y": {
-                "name": "Same as associated field",
+                "name": "Same as associated field y",
                 "repeatable": true,
                 "static": false
             },
             "z": {
-                "name": "Same as associated field",
+                "name": "Same as associated field z",
                 "repeatable": true,
                 "static": false
             }

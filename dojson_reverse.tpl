@@ -45,7 +45,7 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
     {%- set subfields = dict() %}
     {%- set reverse_subfields = dict() %}
     field_map = {
-      {%- for code, subfield in field.get('subfields').items() %}
+      {%- for code, subfield in sort_field_map(field.get('subfields')) %}
         '{{ clean_name(subfield['name']) }}': '{{ code }}',
         {%- do subfields.update({code: clean_name(subfield['name'])}) %}
         {%- do reverse_subfields.update({clean_name(subfield['name']): code}) %}
@@ -54,29 +54,25 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
 
     order = utils.map_order(field_map, value)
 
-    {%- if indicator1.get('name') %}
+    {%- if indicator1.get('name') in subfields.values() and len(indicator1.get('values')) > 1  %}
 
-    if indicator_map1.get(value.get('{{ indicator1.get('name') }}'), '7') != '7':
-        try:
-            order.remove(field_map.get('{{ indicator1.get('name') }}'))
-        except ValueError:
-            pass
+    if indicator_map1.get(value.get('{{ indicator1.get('name') }}'), '7') != '7' and\
+            field_map.get('{{ indicator1.get('name') }}'):
+        order.remove(field_map.get('{{ indicator1.get('name') }}'))
 
     {%- endif %}
 
-    {%- if indicator2.get('name') %}
+    {%- if indicator2.get('name') in subfields.values() and len(indicator2.get('values')) > 1  %}
 
-    if indicator_map2.get(value.get('{{ indicator2.get('name') }}'), '7') != '7':
-        try:
-            order.remove(field_map.get('{{ indicator2.get('name') }}'))
-        except ValueError:
-            pass
+    if indicator_map2.get(value.get('{{ indicator2.get('name') }}'), '7') != '7' and\
+            field_map.get('{{ indicator2.get('name') }}'):
+        order.remove(field_map.get('{{ indicator2.get('name') }}'))
 
     {%- endif %}
 
     return {
         '__order__': tuple(order) if len(order) else None,
-    {%- for code, subfield in field.get('subfields').items() %}
+    {%- for code, subfield in sort_field_map(field.get('subfields')) %}
       {%- if subfield.get('repeatable', False) %}
         '{{ code }}': utils.reverse_force_list(
             value.get('{{ clean_name(subfield['name']) }}')

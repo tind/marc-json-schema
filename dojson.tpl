@@ -44,7 +44,7 @@ def {{ clean_name(field.name) }}(self, key, value):
 
     {%- set reverse_subfields = dict() %}
     field_map = {
-      {%- for code, subfield in field.get('subfields').items() %}
+      {%- for code, subfield in sort_field_map(field.get('subfields')) %}
         '{{ code }}': '{{ clean_name(subfield['name']) }}',
         {%- do reverse_subfields.update({clean_name(subfield['name']): code}) %}
       {%- endfor %}
@@ -72,7 +72,7 @@ def {{ clean_name(field.name) }}(self, key, value):
 
     return {
         '__order__': tuple(order) if len(order) else None,
-    {%- for code, subfield in field.get('subfields').items() %}
+    {%- for code, subfield in sort_field_map(field.get('subfields')) %}
       {%- if clean_name(subfield['name']) not in (indicator1['name'], indicator2['name']) %}
         {%- if subfield.get('repeatable', False) %}
         '{{ clean_name(subfield['name']) }}': utils.force_list(

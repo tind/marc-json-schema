@@ -44,8 +44,9 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
 
     {%- set subfields = dict() %}
     {%- set reverse_subfields = dict() %}
+
     field_map = {
-      {%- for code, subfield in field.get('subfields').items() %}
+      {%- for code, subfield in sort_field_map(field.get('subfields')) %}
         '{{ clean_name(subfield['name']) }}': '{{ code }}',
         {%- do subfields.update({code: clean_name(subfield['name'])}) %}
         {%- do reverse_subfields.update({clean_name(subfield['name']): code}) %}
@@ -55,40 +56,28 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
     order = utils.map_order(field_map, value, liberal=True, indicators=['{{ indicator1.get('name') }}', '{{ indicator2.get('name') }}'])
 
     {%- if indicator1.get('name') %}
+      {%- if indicator1.get('name') in subfields.values() and len(indicator1.get('values')) > 0 %}
 
-    if indicator_map1.get(value.get('{{ indicator1.get('name') }}'), '7') != '7':
-        try:
-            order.remove(field_map.get('{{ indicator1.get('name') }}'))
-        except ValueError:
-            pass
+    if (indicator_map1.get(value.get('{{ indicator1.get('name') }}'), '7') != '7' or len(value.get('{{ indicator1.get('name') }}', '')) == 1) and\
+            field_map.get('{{ indicator1.get('name') }}'):
+        order.remove(field_map.get('{{ indicator1.get('name') }}'))
 
+      {%- endif %}
     {%- endif %}
 
     {%- if indicator2.get('name') %}
+      {%- if indicator2.get('name') in subfields.values() and len(indicator2.get('values')) > 0  %}
 
-    if indicator_map2.get(value.get('{{ indicator2.get('name') }}'), '7') != '7':
-        try:
-            order.remove(field_map.get('{{ indicator2.get('name') }}'))
-        except ValueError:
-            pass
+    if (indicator_map2.get(value.get('{{ indicator2.get('name') }}'), '7') != '7' or len(value.get('{{ indicator2.get('name') }}', '')) == 1) and\
+            field_map.get('{{ indicator2.get('name') }}'):
+        order.remove(field_map.get('{{ indicator2.get('name') }}'))
 
+      {%- endif %}
     {%- endif %}
-
-    if not value.get('$ind2'):
-        try:
-            order.remove('$ind2')
-        except ValueError:
-            pass
-
-    if not value.get('$ind1'):
-        try:
-            order.remove('$ind1')
-        except ValueError:
-            pass
 
     record_dict = {
         '__order__': tuple(order) if len(order) else None,
-    {%- for code, subfield in field.get('subfields').items() %}
+    {%- for code, subfield in sort_field_map(field.get('subfields')) %}
       {%- if subfield.get('repeatable', False) %}
         '{{ code }}': utils.reverse_force_list(
             value.get('{{ clean_name(subfield['name']) }}')
@@ -101,7 +90,8 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
         {%- if indicator1.get('specified_in_subfield_ind') and subfields.get(indicator1.get('specified_in_subfield')) %}
         '$ind1': '{{ indicator1.get('specified_in_subfield_ind') }}' if '{{ indicator1['name'] }}' in value and
         not indicator_map1.get(value.get('{{ indicator1['name'] }}')) and
-        value.get('{{ indicator1['name']}}') == value.get('{{ subfields.get(indicator1.get('specified_in_subfield')) }}')
+        value.get('{{ indicator1['name']}}') == value.get('{{ subfields.get(indicator1.get('specified_in_subfield')) }}') and
+        field_map.get('{{ indicator1['name']}}') in order
         else indicator_map1.get(value.get('{{ indicator1['name']}}'), value.get('{{ indicator1['name'] }}', '_')),
         {%- else %}
         '$ind1': indicator_map1.get(value.get('{{ indicator1['name'] }}'), value.get('{{ indicator1['name'] }}', '_')),
@@ -113,7 +103,8 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
         {%- if indicator2.get('specified_in_subfield_ind') and subfields.get(indicator2.get('specified_in_subfield')) %}
         '$ind2': '{{ indicator2.get('specified_in_subfield_ind') }}' if '{{ indicator2['name'] }}' in value and
         not indicator_map2.get(value.get('{{ indicator2['name'] }}')) and
-        value.get('{{ indicator2['name']}}') == value.get('{{ subfields.get(indicator2.get('specified_in_subfield')) }}')
+        value.get('{{ indicator2['name']}}') == value.get('{{ subfields.get(indicator2.get('specified_in_subfield')) }}') and
+        field_map.get('{{ indicator2['name']}}') in order
         else indicator_map2.get(value.get('{{ indicator2['name']}}'), value.get('{{ indicator2['name'] }}', '_')),
         {%- else %}
         '$ind2': indicator_map2.get(value.get('{{ indicator2['name'] }}'), value.get('{{ indicator2['name'] }}', '_')),
