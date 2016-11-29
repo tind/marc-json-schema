@@ -11,6 +11,7 @@
 
 from dojson import utils
 
+from ..utils import liberal_map_order
 from ..model import marc21_liberal
 
 {%- for tag, field in data if tag|length() == 3 %}
@@ -50,7 +51,7 @@ def {{ clean_name(field.name) }}(self, key, value):
       {%- endfor %}
     }
 
-    order = utils.map_order(field_map, value, liberal=True)
+    order = liberal_map_order(field_map, value)
 
     {%- if indicator1.get('name') %}
 

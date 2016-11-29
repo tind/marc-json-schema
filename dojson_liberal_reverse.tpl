@@ -10,6 +10,7 @@
 """To MARC 21 model definition."""
 
 from dojson import utils
+from dojson.contrib.marc21_liberal.utils import liberal_map_order
 
 from ..model import to_marc21_liberal
 
@@ -53,7 +54,7 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
       {%- endfor %}
     }
 
-    order = utils.map_order(field_map, value, liberal=True, indicators=['{{ indicator1.get('name') }}', '{{ indicator2.get('name') }}'])
+    order = liberal_map_order(field_map, value, indicators=['{{ indicator1.get('name') }}', '{{ indicator2.get('name') }}'])
 
     {%- if indicator1.get('name') %}
       {%- if indicator1.get('name') in subfields.values() and len(indicator1.get('values')) > 0 %}
@@ -104,7 +105,7 @@ def reverse_{{ clean_name(field.name) }}(self, key, value):
         '$ind2': '{{ indicator2.get('specified_in_subfield_ind') }}' if '{{ indicator2['name'] }}' in value and
         not indicator_map2.get(value.get('{{ indicator2['name'] }}')) and
         value.get('{{ indicator2['name']}}') == value.get('{{ subfields.get(indicator2.get('specified_in_subfield')) }}') and
-        field_map.get('{{ indicator2['name']}}') in order
+        field_map.get('{{ subfields.get(indicator2.get('specified_in_subfield')) }}') in order
         else indicator_map2.get(value.get('{{ indicator2['name']}}'), value.get('{{ indicator2['name'] }}', '_')),
         {%- else %}
         '$ind2': indicator_map2.get(value.get('{{ indicator2['name'] }}'), value.get('{{ indicator2['name'] }}', '_')),
